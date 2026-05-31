@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Imóvel - BuscaImóvel</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .detalhe-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .btn-voltar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #1D9E75;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+      text-decoration: none;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .btn-voltar:hover { text-decoration: underline; }
+
+    .detalhe-foto {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+    }
+
+    .detalhe-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+    }
+
+    .detalhe-fonte {
+      font-size: 0.75rem;
+      color: #1D9E75;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .detalhe-titulo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .detalhe-preco {
+      font-size: 2rem;
+      color: #1D9E75;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .detalhe-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-item {
+      background: #f5f9f7;
+      border-radius: 10px;
+      padding: 12px 16px;
+      text-align: center;
+    }
+
+    .info-item .info-valor {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .info-item .info-label {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .detalhe-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .detalhe-tag {
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #e8f8f2;
+      color: #0d7a58;
+      font-weight: 600;
+    }
+
+    .detalhe-descricao {
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .detalhe-secao-titulo {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 1rem;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .btn-anuncio {
+  display: inline-block;
+  background: #1D9E75;
+  color: white;
+  text-align: center;
+  padding: 12px 28px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+
+    .btn-anuncio:hover { background: #178a63; }
+
+    .badge-transacao {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .badge-compra { background: #e8f8f2; color: #0d7a58; }
+    .badge-aluguel { background: #e8f0fb; color: #1a5fa8; }
+    .badge-temporada { background: #fef3e2; color: #a06b00; }
+  </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script></head>
+<body>
+
+  <header>
+    <div class="logo" onclick="window.location='/'">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="10" fill="#fff"/>
+        <path d="M18 6L6 16V30H14V22H22V30H30V16L18 6Z" fill="#1D9E75"/>
+        <circle cx="18" cy="15" r="3" fill="#fff"/>
+      </svg>
+      <span>Busca<strong>Imóvel</strong></span>
+    </div>
+    <p>Pesquise em vários sites de imóveis de uma só vez</p>
+  </header>
+
+  <div class="detalhe-container">
+    <a class="btn-voltar" onclick="history.back()">← Voltar aos resultados</a>
+
+    <div id="conteudo">
+      <p style="text-align:center; color:#aaa; padding: 3rem;">Carregando...</p>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function carregarImovel() {
+      try {
+        const res = await fetch(`/busca/id/${id}`);
+        const imovel = await res.json();
+
+        const preco = Number(imovel.preco);
+        const precoFormatado = preco > 10000
+          ? `R$ ${preco.toLocaleString('pt-BR')}`
+          : `R$ ${preco.toLocaleString('pt-BR')}/mês`;
+
+        const badgeClass = imovel.tipo_transacao === 'aluguel' ? 'badge-aluguel'
+          : imovel.tipo_transacao === 'temporada' ? 'badge-temporada' : 'badge-compra';
+
+        const tags = [];
+        if (imovel.descricao?.toLowerCase().includes('vaga') || imovel.descricao?.toLowerCase().includes('garagem')) tags.push('🚗 Garagem');
+        if (imovel.descricao?.toLowerCase().includes('mobili')) tags.push('🛋️ Mobiliado');
+        if (imovel.descricao?.toLowerCase().includes('pet')) tags.push('🐾 Aceita pet');
+        if (imovel.descricao?.toLowerCase().includes('quintal')) tags.push('🌿 Quintal');
+        if (imovel.descricao?.toLowerCase().includes('piscina')) tags.push('🏊 Piscina');
+        if (imovel.descricao?.toLowerCase().includes('academia')) tags.push('💪 Academia');
+
+        document.getElementById('conteudo').innerHTML = `
+          <img class="detalhe-foto" src="${imovel.foto_url || 'https://picsum.photos/900/400?random=' + imovel.id}" alt="${imovel.titulo}" />
+
+          <div class="detalhe-card">
+            <div class="detalhe-fonte">${imovel.fonte}</div>
+            <span class="badge-transacao ${badgeClass}">${imovel.tipo_transacao}</span>
+            <div class="detalhe-titulo">${imovel.titulo}</div>
+            <div class="detalhe-preco">${precoFormatado}</div>
+
+            <div class="detalhe-info-grid">
+              ${imovel.area_m2 ? `<div class="info-item"><div class="info-valor">${imovel.area_m2} m²</div><div class="info-label">Área</div></div>` : ''}
+              ${imovel.quartos ? `<div class="info-item"><div class="info-valor">${imovel.quartos}</div><div class="info-label">Quartos</div></div>` : ''}
+              ${imovel.tipo_imovel ? `<div class="info-item"><div class="info-valor">${imovel.tipo_imovel}</div><div class="info-label">Tipo</div></div>` : ''}
+              ${imovel.bairro ? `<div class="info-item"><div class="info-valor">${imovel.bairro}</div><div class="info-label">Bairro</div></div>` : ''}
+              ${imovel.cidade ? `<div class="info-item"><div class="info-valor">${imovel.cidade}</div><div class="info-label">Cidade</div></div>` : ''}
+            </div>
+
+            ${tags.length ? `<div class="detalhe-tags">${tags.map(t => `<span class="detalhe-tag">${t}</span>`).join('')}</div>` : ''}
+
+            <div class="detalhe-secao-titulo">Descrição</div>
+            <div class="detalhe-descricao">${imovel.descricao || 'Sem descrição disponível.'}</div>
+
+            <a class="btn-anuncio" href="${imovel.url_anuncio}" target="_blank">Ver anúncio original →</a>
+
+${imovel.latitude ? `
+<div class="detalhe-secao-titulo" style="margin-top:1.5rem">Localização</div>
+<div id="mapa" style="height:300px; border-radius:12px; margin-top:0.5rem;"></div>
+` : ''}
+          </div>
+        `;
+
+        document.title = imovel.titulo + ' - BuscaImóvel';
+
+      } catch (err) {
+        document.getElementById('conteudo').innerHTML = '<p style="text-align:center;color:#aaa;padding:3rem;">Imóvel não encontrado.</p>';
+      }
+    }
+
+    async function carregarImovel() {
+  try {
+    const res = await fetch(`/busca/id/${id}`);
+    const imovel = await res.json();
+
+    const preco = Number(imovel.preco);
+    const precoFormatado = preco > 10000
+      ? `R$ ${preco.toLocaleString('pt-BR')}`
+      : `R$ ${preco.toLocaleString('pt-BR')}/mês`;
+
+    const badgeClass = imovel.tipo_transacao === 'aluguel' ? 'badge-aluguel'
+      : imovel.tipo_transacao === 'temporada' ? 'badge-temporada' : 'badge-compra';
+
+    const tags = [];
+    if (imovel.descricao?.toLowerCase().includes('vaga') || imovel.descricao?.toLowerCase().includes('garagem')) tags.push('🚗 Garagem');
+    if (imovel.descricao?.toLowerCase().includes('mobili')) tags.push('🛋️ Mobiliado');
+    if (imovel.descricao?.toLowerCase().includes('pet')) tags.push('🐾 Aceita pet');
+    if (imovel.descricao?.toLowerCase().includes('quintal')) tags.push('🌿 Quintal');
+    if (imovel.descricao?.toLowerCase().includes('piscina')) tags.push('🏊 Piscina');
+    if (imovel.descricao?.toLowerCase().includes('academia')) tags.push('💪 Academia');
+
+    document.getElementById('conteudo').innerHTML = `
+      <img class="detalhe-foto" src="${imovel.foto_url || 'https://picsum.photos/900/400?random=' + imovel.id}" alt="${imovel.titulo}" />
+
+      <div class="detalhe-card">
+        <div class="detalhe-fonte">${imovel.fonte}</div>
+        <span class="badge-transacao ${badgeClass}">${imovel.tipo_transacao}</span>
+        <div class="detalhe-titulo">${imovel.titulo}</div>
+        <div class="detalhe-preco">${precoFormatado}</div>
+
+        <div class="detalhe-info-grid">
+          ${imovel.area_m2 ? `<div class="info-item"><div class="info-valor">${imovel.area_m2} m²</div><div class="info-label">Área</div></div>` : ''}
+          ${imovel.quartos ? `<div class="info-item"><div class="info-valor">${imovel.quartos}</div><div class="info-label">Quartos</div></div>` : ''}
+          ${imovel.tipo_imovel ? `<div class="info-item"><div class="info-valor">${imovel.tipo_imovel}</div><div class="info-label">Tipo</div></div>` : ''}
+          ${imovel.bairro ? `<div class="info-item"><div class="info-valor">${imovel.bairro}</div><div class="info-label">Bairro</div></div>` : ''}
+          ${imovel.cidade ? `<div class="info-item"><div class="info-valor">${imovel.cidade}</div><div class="info-label">Cidade</div></div>` : ''}
+        </div>
+
+        ${tags.length ? `<div class="detalhe-tags">${tags.map(t => `<span class="detalhe-tag">${t}</span>`).join('')}</div>` : ''}
+
+        <div class="detalhe-secao-titulo">Descrição</div>
+        <div class="detalhe-descricao">${imovel.descricao || 'Sem descrição disponível.'}</div>
+
+        <a class="btn-anuncio" href="${imovel.url_anuncio}" target="_blank">Ver anúncio original →</a>
+
+        ${imovel.latitude ? `
+        <div class="detalhe-secao-titulo" style="margin-top:1.5rem">Localização</div>
+        <div id="mapa" style="height:300px; border-radius:12px; margin-top:0.5rem;"></div>
+        ` : ''}
+      </div>
+    `;
+
+    document.title = imovel.titulo + ' - BuscaImóvel';
+
+    if (imovel.latitude && imovel.longitude) {
+      const lat = parseFloat(imovel.latitude);
+      const lng = parseFloat(imovel.longitude);
+      const mapa = L.map('mapa').setView([lat, lng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(mapa);
+      L.marker([lat, lng]).addTo(mapa)
+        .bindPopup(imovel.titulo)
+        .openPopup();
+    }
+
+  } catch (err) {
+    document.getElementById('conteudo').innerHTML = '<p style="text-align:center;color:#aaa;padding:3rem;">Imóvel não encontrado.</p>';
+  }
+}
+
+carregarImovel();
+  </script>
+
+</body>
+</html>

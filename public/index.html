@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BuscaImóvel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <rect width="36" height="36" rx="10" fill="#fff"/>
+        <path d="M18 6L6 16V30H14V22H22V30H30V16L18 6Z" fill="#1D9E75"/>
+        <circle cx="18" cy="15" r="3" fill="#fff"/>
+      </svg>
+      <span>Busca<strong>Imóvel</strong></span>
+    </div>
+    <p>Pesquise em vários sites de imóveis de uma só vez</p>
+  </header>
+
+  <section class="busca">
+
+    <div class="busca-principal">
+      <input type="text" id="cidade" placeholder="Digite a cidade, ex: Rio de Janeiro" />
+      <button onclick="buscar()">🔍 Buscar Imóveis</button>
+    </div>
+
+    <div class="filtros-primarios">
+      <select id="tipo_transacao">
+        <option value="">Tipo de transação</option>
+        <option value="compra">Compra</option>
+        <option value="aluguel">Aluguel</option>
+        <option value="temporada">Temporada</option>
+      </select>
+
+      <select id="tipo_imovel">
+        <option value="">Tipo de imóvel</option>
+        <option value="apartamento">Apartamento</option>
+        <option value="casa">Casa</option>
+        <option value="kitnet">Kitnet</option>
+        <option value="studio">Studio</option>
+        <option value="comercial">Comercial</option>
+        <option value="terreno">Terreno</option>
+      </select>
+
+      <select id="preco_min">
+        <option value="">Preço mínimo</option>
+        <option value="500">R$ 500</option>
+        <option value="1000">R$ 1.000</option>
+        <option value="1500">R$ 1.500</option>
+        <option value="2000">R$ 2.000</option>
+        <option value="2500">R$ 2.500</option>
+        <option value="3000">R$ 3.000</option>
+        <option value="3500">R$ 3.500</option>
+        <option value="4000">R$ 4.000</option>
+        <option value="4500">R$ 4.500</option>
+        <option value="5000">R$ 5.000</option>
+        <option value="6000">R$ 6.000</option>
+        <option value="7000">R$ 7.000</option>
+        <option value="8000">R$ 8.000</option>
+        <option value="9000">R$ 9.000</option>
+        <option value="10000">R$ 10.000</option>
+        <option value="12000">R$ 12.000</option>
+        <option value="15000">R$ 15.000</option>
+        <option value="20000">R$ 20.000</option>
+      </select>
+
+      <select id="preco_max">
+        <option value="">Preço máximo</option>
+        <option value="500">R$ 500</option>
+        <option value="1000">R$ 1.000</option>
+        <option value="1500">R$ 1.500</option>
+        <option value="2000">R$ 2.000</option>
+        <option value="2500">R$ 2.500</option>
+        <option value="3000">R$ 3.000</option>
+        <option value="3500">R$ 3.500</option>
+        <option value="4000">R$ 4.000</option>
+        <option value="4500">R$ 4.500</option>
+        <option value="5000">R$ 5.000</option>
+        <option value="6000">R$ 6.000</option>
+        <option value="7000">R$ 7.000</option>
+        <option value="8000">R$ 8.000</option>
+        <option value="9000">R$ 9.000</option>
+        <option value="10000">R$ 10.000</option>
+        <option value="12000">R$ 12.000</option>
+        <option value="15000">R$ 15.000</option>
+        <option value="20000">R$ 20.000</option>
+      </select>
+    </div>
+
+    <div class="filtros-secundarios-toggle" onclick="toggleFiltros()">
+      <span id="toggle-label">+ Mais filtros</span>
+    </div>
+
+    <div class="filtros-secundarios" id="filtros-secundarios" style="display:none">
+      <select id="quartos">
+        <option value="">Quartos</option>
+        <option value="1">1 quarto</option>
+        <option value="2">2 quartos</option>
+        <option value="3">3 quartos</option>
+        <option value="4">4+ quartos</option>
+      </select>
+
+      <label class="check-filtro">
+        <input type="checkbox" id="garagem"> Vaga de garagem
+      </label>
+      <label class="check-filtro">
+        <input type="checkbox" id="mobiliado"> Mobiliado
+      </label>
+      <label class="check-filtro">
+        <input type="checkbox" id="aceita_pet"> Aceita pet
+      </label>
+      <label class="check-filtro">
+        <input type="checkbox" id="quintal"> Tem quintal
+      </label>
+      <label class="check-filtro">
+        <input type="checkbox" id="piscina"> Piscina
+      </label>
+      <label class="check-filtro">
+        <input type="checkbox" id="academia"> Academia
+      </label>
+    </div>
+
+  </section>
+
+  <section class="resultados">
+    <div class="resultados-header" id="resultados-header" style="display:none">
+      <div id="contador"></div>
+      <div class="visualizacao">
+        <button class="vis-btn ativo" id="btn-grid" onclick="setVis('grid')">⊞ Grade</button>
+        <button class="vis-btn" id="btn-lista" onclick="setVis('lista')">☰ Lista</button>
+      </div>
+    </div>
+    <div id="cards"></div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
