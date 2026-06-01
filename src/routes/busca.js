@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
     params.push(preco_max);
   }
 
-  query += ' ORDER BY coletado_em DESC LIMIT 50';
+  query += ' ORDER BY coletado_em DESC LIMIT 20';
 
   try {
     const resultado = await pool.query(query, params);

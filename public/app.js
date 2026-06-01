@@ -141,10 +141,5 @@ const fotoDefault = `https://dummyimage.com/400x300/${cor}/fff&text=${encodeURIC
   
     document.getElementById('cards').innerHTML = cards;
   
-    // Busca fotos reais em paralelo
-    imoveis.forEach(imovel => {
-      if (!imovel.foto_url && imovel.url_anuncio) {
-        buscarFoto(imovel.url_anuncio, imovel.id);
-      }
-    });
+    
   }
