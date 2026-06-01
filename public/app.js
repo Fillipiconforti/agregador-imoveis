@@ -110,7 +110,7 @@ async function buscarFoto(urlAnuncio, id) {
   
       const lat = imovel.latitude || -22.9068;
       const lng = imovel.longitude || -43.1729;
-      const fotoDefault = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=400x300&maptype=mapnik&markers=${lat},${lng},red`;
+      const fotoDefault = `https://via.placeholder.com/400x300/1D9E75/ffffff?text=${encodeURIComponent(imovel.tipo_imovel?.toUpperCase() || 'IMÓVEL')}`;
   
       return `
         <div class="card ${isLista ? 'lista-item' : ''}">
