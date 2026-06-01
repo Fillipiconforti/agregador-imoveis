@@ -1,5 +1,5 @@
 let visualizacao = 'grid';
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     document.getElementById('cidade').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') buscar();
     });
@@ -114,7 +114,10 @@ async function buscarFoto(urlAnuncio, id) {
   
       const lat = imovel.latitude || -22.9068;
       const lng = imovel.longitude || -43.1729;
-      const fotoDefault = `https://via.placeholder.com/400x300/1D9E75/ffffff?text=${encodeURIComponent(imovel.tipo_imovel?.toUpperCase() || 'IMÓVEL')}`;
+      const tipo = imovel.tipo_imovel || 'imovel';
+const cores = {casa: '#2E86AB', apartamento: '#1D9E75', terreno: '#A23B72', comercial: '#F18F01', imovel: '#555'};
+const cor = (cores[tipo] || '#555').replace('#', '');
+const fotoDefault = `https://dummyimage.com/400x300/${cor}/fff&text=${encodeURIComponent(tipo.toUpperCase())}`;
   
       return `
         <div class="card ${isLista ? 'lista-item' : ''}">
