@@ -108,7 +108,9 @@ async function buscarFoto(urlAnuncio, id) {
       if (imovel.descricao?.toLowerCase().includes('piscina')) tags.push('🏊 Piscina');
       if (imovel.descricao?.toLowerCase().includes('academia')) tags.push('💪 Academia');
   
-      const fotoDefault = `https://picsum.photos/400/300?random=${imovel.id}`;
+      const lat = imovel.latitude || -22.9068;
+      const lng = imovel.longitude || -43.1729;
+      const fotoDefault = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=400x300&maptype=mapnik&markers=${lat},${lng},red`;
   
       return `
         <div class="card ${isLista ? 'lista-item' : ''}">
