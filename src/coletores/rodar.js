@@ -1,8 +1,7 @@
-const { coletarMercadoLivre } = require('./olx');
+const { coletarCaixa } = require('./caixa');
 
 async function rodarColeta() {
-  await coletarMercadoLivre('Rio de Janeiro');
-  await coletarMercadoLivre('São Paulo');
+  await coletarCaixa();
   process.exit();
 }
 

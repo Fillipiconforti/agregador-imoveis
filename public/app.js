@@ -80,41 +80,62 @@ async function buscar() {
   }
 }
 
-function renderCards(imoveis) {
-  const isLista = visualizacao === 'lista';
-
-  const cards = imoveis.map(imovel => {
-    const preco = Number(imovel.preco);
-    const precoFormatado = preco > 10000
-      ? `R$ ${preco.toLocaleString('pt-BR')}`
-      : `R$ ${preco.toLocaleString('pt-BR')}/mês`;
-
-    const tags = [];
-    if (imovel.descricao?.toLowerCase().includes('vaga') || imovel.descricao?.toLowerCase().includes('garagem')) tags.push('🚗 Garagem');
-    if (imovel.descricao?.toLowerCase().includes('mobili')) tags.push('🛋️ Mobiliado');
-    if (imovel.descricao?.toLowerCase().includes('pet')) tags.push('🐾 Aceita pet');
-    if (imovel.descricao?.toLowerCase().includes('quintal')) tags.push('🌿 Quintal');
-    if (imovel.descricao?.toLowerCase().includes('piscina')) tags.push('🏊 Piscina');
-    if (imovel.descricao?.toLowerCase().includes('academia')) tags.push('💪 Academia');
-
-    return `
-      <div class="card ${isLista ? 'lista-item' : ''}">
-        <img src="${imovel.foto_url || 'https://picsum.photos/400/300?random=' + imovel.id}" alt="${imovel.titulo}" />
-        <div class="card-body">
-          <div class="card-fonte">${imovel.fonte}</div>
-          <div class="card-titulo">${imovel.titulo}</div>
-          <div class="card-preco">${precoFormatado}</div>
-          <div class="card-detalhes">
-            ${imovel.area_m2 ? imovel.area_m2 + ' m²' : ''}
-            ${imovel.quartos ? '· ' + imovel.quartos + ' quartos' : ''}
-            ${imovel.bairro ? '· ' + imovel.bairro : ''}
+async function buscarFoto(urlAnuncio, id) {
+    try {
+      const res = await fetch(`/busca/foto?url=${encodeURIComponent(urlAnuncio)}`);
+      const data = await res.json();
+      if (data.foto) {
+        const img = document.getElementById(`foto-${id}`);
+        if (img) img.src = data.foto;
+      }
+    } catch (e) {}
+  }
+  
+  function renderCards(imoveis) {
+    const isLista = visualizacao === 'lista';
+  
+    const cards = imoveis.map(imovel => {
+      const preco = Number(imovel.preco);
+      const precoFormatado = preco > 10000
+        ? `R$ ${preco.toLocaleString('pt-BR')}`
+        : `R$ ${preco.toLocaleString('pt-BR')}/mês`;
+  
+      const tags = [];
+      if (imovel.descricao?.toLowerCase().includes('vaga') || imovel.descricao?.toLowerCase().includes('garagem')) tags.push('🚗 Garagem');
+      if (imovel.descricao?.toLowerCase().includes('mobili')) tags.push('🛋️ Mobiliado');
+      if (imovel.descricao?.toLowerCase().includes('pet')) tags.push('🐾 Aceita pet');
+      if (imovel.descricao?.toLowerCase().includes('quintal')) tags.push('🌿 Quintal');
+      if (imovel.descricao?.toLowerCase().includes('piscina')) tags.push('🏊 Piscina');
+      if (imovel.descricao?.toLowerCase().includes('academia')) tags.push('💪 Academia');
+  
+      const fotoDefault = `https://picsum.photos/400/300?random=${imovel.id}`;
+  
+      return `
+        <div class="card ${isLista ? 'lista-item' : ''}">
+          <img id="foto-${imovel.id}" src="${imovel.foto_url || fotoDefault}" alt="${imovel.titulo}" />
+          <div class="card-body">
+            <div class="card-fonte">${imovel.fonte}</div>
+            <div class="card-titulo">${imovel.titulo}</div>
+            <div class="card-preco">${precoFormatado}</div>
+            <div class="card-detalhes">
+              ${imovel.area_m2 ? imovel.area_m2 + ' m²' : ''}
+              ${imovel.quartos ? '· ' + imovel.quartos + ' quartos' : ''}
+              ${imovel.bairro ? '· ' + imovel.bairro : ''}
+            </div>
+            ${tags.length ? `<div class="card-tags">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+            <div class="card-descricao">${imovel.descricao || ''}</div>
+            <a class="card-link" href="/imovel.html?id=${imovel.id}">Ver detalhes →</a>
           </div>
-          ${tags.length ? `<div class="card-tags">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
-          <div class="card-descricao">${imovel.descricao || ''}</div>
-          <a class="card-link" href="/imovel.html?id=${imovel.id}">Ver detalhes →</a>        </div>
-      </div>
-    `;
-  }).join('');
-
-  document.getElementById('cards').innerHTML = cards;
-}
+        </div>
+      `;
+    }).join('');
+  
+    document.getElementById('cards').innerHTML = cards;
+  
+    // Busca fotos reais em paralelo
+    imoveis.forEach(imovel => {
+      if (!imovel.foto_url && imovel.url_anuncio) {
+        buscarFoto(imovel.url_anuncio, imovel.id);
+      }
+    });
+  }

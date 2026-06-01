@@ -51,5 +51,25 @@ router.get('/id/:id', async (req, res) => {
       console.error(err);
       res.status(500).json({ erro: 'Erro ao buscar imóvel' });
     }
+  });router.get('/foto', async (req, res) => {
+    const { url } = req.query;
+    if (!url) return res.json({ foto: null });
+  
+    try {
+      const resposta = await require('axios').get(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+        timeout: 8000
+      });
+  
+      const html = resposta.data;
+      const match = html.match(/src="([^"]*foto[^"]*\.jpg[^"]*)"/i) ||
+                    html.match(/src="([^"]*imagem[^"]*\.jpg[^"]*)"/i) ||
+                    html.match(/<img[^>]+class="[^"]*foto[^"]*"[^>]+src="([^"]+)"/i);
+  
+      const foto = match ? match[1] : null;
+      res.json({ foto });
+    } catch (err) {
+      res.json({ foto: null });
+    }
   });
 module.exports = router;
