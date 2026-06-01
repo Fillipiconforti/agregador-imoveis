@@ -1,5 +1,9 @@
 let visualizacao = 'grid';
-
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('cidade').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') buscar();
+    });
+  });
 function toggleFiltros() {
   const sec = document.getElementById('filtros-secundarios');
   const label = document.getElementById('toggle-label');
